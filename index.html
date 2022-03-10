@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serialization Bug</title>
     <script src="https://cdn.jsdelivr.net/npm/tweetnacljs@0.9.1/nacl.min.js"></script>
+    <!-- switch between 1.31 and 1.36 to see the bug -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.31.0/lib/index.iife.js"></script>
 </head>
 <body>
@@ -14,6 +15,7 @@
     <div style="display:flex;height:100%;width:40%;word-break: break-all; flex-direction: column;">Transaction After Transaction.from(transaction.serialize()): <span id="tx1"></span></div>
     </div>
     <div style="text-align: center;margin-top: 2rem;">Transactions Are Equal = <span id="txequal"></span></div>
+    <div id="serialize" style="text-align:center;margin-top: 2rem;"></div>
     <!-- <script>
         const pubKey = "A2UTcxk9GQm8YCuJnQKJ5Djnd4ucjF5YJW23h9p8NRCf";
         const privKey = "000000000000000000000000000000000000000000000000000000000000aaaa";
@@ -98,7 +100,13 @@
     document.querySelector('#tx0').innerHTML=JSON.stringify(t0);
     document.querySelector('#tx1').innerHTML=JSON.stringify(t1);
     document.querySelector('#txequal').innerHTML=JSON.stringify(t0)==JSON.stringify(t1);
-    t1.serialize();
+    try{
+        t1.serialize();
+        document.querySelector('#serialize').innerHTML="Signature Verification Passed";
+    }
+    catch (err){
+        document.querySelector('#serialize').innerHTML=err;
+    }
     </script>
 </body>
 </html>
