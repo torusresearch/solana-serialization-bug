@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serialization Bug</title>
+    <script src="https://cdn.jsdelivr.net/npm/tweetnacljs@0.9.1/nacl.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.31.0/lib/index.iife.js"></script>
+</head>
+<body>
+    <div style="display:flex;width:100vw;justify-content: space-around;">
+    <div style="display:flex;height:100%;width:40%;word-break: break-all; flex-direction: column;">Transaction : <span id="tx0"></span></div>
+    <div style="display:flex;height:100%;width:40%;word-break: break-all; flex-direction: column;">Transaction After Transaction.from(transaction.serialize()): <span id="tx1"></span></div>
+    </div>
+    <div style="text-align: center;margin-top: 2rem;">Transactions Are Equal = <span id="txequal"></span></div>
+    <!-- <script>
+        const pubKey = "A2UTcxk9GQm8YCuJnQKJ5Djnd4ucjF5YJW23h9p8NRCf";
+        const privKey = "000000000000000000000000000000000000000000000000000000000000aaaa";
+        const privKeyArr = new Uint8Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,170,170,134,25,207,164,28,209,221,171,125,218,39,35,192,42,236,168,244,111,239,46,232,153,68,205,37,26,24,143,254,93,21,28]);
+        const {Transaction, Message, PublicKey, TransactionInstruction, Keypair} = solanaWeb3;
+        const tx = new Transaction({feePayer: new PublicKey("A2UTcxk9GQm8YCuJnQKJ5Djnd4ucjF5YJW23h9p8NRCf"), recentBlockhash: "6xn38tWeeofVyhG9nhUwUhXTT9vX9AC1zVNsqPuUzFhg"});
+        const ix = new TransactionInstruction({keys: [
+            {pubkey: new PublicKey("A2UTcxk9GQm8YCuJnQKJ5Djnd4ucjF5YJW23h9p8NRCf"), isSigner: true,isWritable: true},            {pubkey: new PublicKey("DY4ovM8RmR2ZRappuPmNvCqnCQZdjws5e1CCtFp4inwx"), isSigner: false, isWritable: true},            {pubkey: new PublicKey("A2UTcxk9GQm8YCuJnQKJ5Djnd4ucjF5YJW23h9p8NRCf"), isSigner: false, isWritable: false},        ],        programId: new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"),    });
+    tx.add(ix);
+    console.log(tx);
+    console.log(tx.serialize());
+    serializedOnce.partialSign(Keypair.fromSecretKey(privKeyArr));
+    const serializedTx=tx.serialize();
+    const serializedOnce = Transaction.from(serializedTx);
+    console.log(serializedOnce);
+    console.log(Transaction.from(serializedOnce.serialize()));
+    </script> -->
+    <script>
+    const {Transaction, Message, PublicKey, TransactionInstruction, Keypair} = solanaWeb3;
+    const signer = Keypair.generate();
+    const acc0Writable = Keypair.generate();
+    const acc1Writable = Keypair.generate();
+    const acc2Writable = Keypair.generate();
+    const t0 = new Transaction({
+      recentBlockhash: "HZaTsZuhN1aaz9WuuimCFMyH7wJ5xiyMUHFCnZSMyguH",
+      feePayer: signer.publicKey
+    });
+    t0.add(new TransactionInstruction({
+      keys: [{
+        pubkey: signer.publicKey,
+        isWritable: true,
+        isSigner: true
+      }, {
+        pubkey: acc0Writable.publicKey,
+        isWritable: true,
+        isSigner: false
+      }],
+      programId: Keypair.generate().publicKey
+    }))
+    t0.add(new TransactionInstruction({
+      keys: [{
+        pubkey: acc1Writable.publicKey,
+        isWritable: false,
+        isSigner: false
+      }],
+      programId: Keypair.generate().publicKey
+    }))
+    t0.add(new TransactionInstruction({
+      keys: [{
+        pubkey: acc2Writable.publicKey,
+        isWritable: true,
+        isSigner: false
+      }],
+      programId: Keypair.generate().publicKey
+    }))
+    t0.add(new TransactionInstruction({
+      keys: [{
+        pubkey: signer.publicKey,
+        isWritable: true,
+        isSigner: true
+      },{
+        pubkey: acc0Writable.publicKey,
+        isWritable: false,
+        isSigner: false
+      },  {
+        pubkey: acc2Writable.publicKey,
+        isWritable: false,
+        isSigner: false
+      }, {
+        pubkey: acc1Writable.publicKey,
+        isWritable: true,
+        isSigner: false
+      }],
+      programId: Keypair.generate().publicKey
+    }))
+    t0.partialSign(signer);
+    const t1 = Transaction.from(t0.serialize());
+    console.log(t0,t1);
+    window.t0=t0;
+    window.t1=t1;
+    console.log("Transactions are equal = ",JSON.stringify(t0)==JSON.stringify(t1));
+    document.querySelector('#tx0').innerHTML=JSON.stringify(t0);
+    document.querySelector('#tx1').innerHTML=JSON.stringify(t1);
+    document.querySelector('#txequal').innerHTML=JSON.stringify(t0)==JSON.stringify(t1);
+    t1.serialize();
+    </script>
+</body>
+</html>
