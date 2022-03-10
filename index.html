@@ -92,7 +92,7 @@
       programId: Keypair.generate().publicKey
     }))
     t0.partialSign(signer);
-    const t1 = Transaction.from(t0.serialize());
+    const t1 = Transaction.from(t0.serialize({requireAllSignatures: false}));
     console.log(t0,t1);
     window.t0=t0;
     window.t1=t1;
