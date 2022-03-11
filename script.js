@@ -39,9 +39,14 @@ const highlight = (newText, oldText) => {
   return text;
 }
 
-
+/*
+    All Solana Web3.js versions mark account as writable/signer in all instructions if even one instruction has marked the acc as writable/signer.
+    e.g. One may have, ix1 with account1, programId1 with acc1 set as writable: true. But ix2 with account1, programId2 with acc1 set as read only.
+    The transaction obtained from Transaction.from(tx.serialize()) has account1 set as writable for all instructions irrespective of other differences(isSigner, programId) etc.
+    Also, Solana web3.js versions <1.31.0 give signature verification error when any non signer account is marked as writable. (when doing transaction.from(transaction.serialize()))
+*/
 const generateAndVerifyTxSignature = () => {
-    const {Transaction, Message, PublicKey, TransactionInstruction, Keypair} = solanaWeb3;
+    const {Transaction, TransactionInstruction, Keypair} = solanaWeb3;
     const signer = Keypair.generate();
     const acc0Writable = Keypair.generate();
     const acc1Writable = Keypair.generate();
@@ -104,8 +109,8 @@ const generateAndVerifyTxSignature = () => {
     window.t0=t0;
     window.t1=t1;
     console.log("Transactions are equal = ",JSON.stringify(t0)==JSON.stringify(t1));
-    document.querySelector('#tx0').innerHTML=syntaxHighlight(JSON.stringify(t0, undefined, 4));
-    document.querySelector('#tx1').innerHTML=highlight(JSON.stringify(t1, undefined, 4), JSON.stringify(t0, undefined, 4));
+    document.querySelector('#tx0').innerHTML=syntaxHighlight(JSON.stringify(t0, undefined, 2));
+    document.querySelector('#tx1').innerHTML=highlight(JSON.stringify(t1, undefined, 2), JSON.stringify(t0, undefined, 2));
     document.querySelector('#txequal').innerHTML=JSON.stringify(t0)==JSON.stringify(t1);
     try{
         t1.serialize();
@@ -121,18 +126,16 @@ generateAndVerifyTxSignature();
 
 
 
-document.querySelector("input#switchWeb3").addEventListener("change",(e)=>{
+document.querySelector("input#web3version").addEventListener("input",(e)=>{
     let script=document.querySelector('script#web3js');
     document.head.removeChild(script);
     script=document.createElement('script');
     document.querySelector("button#regen").setAttribute("disabled", true);
-    if(e.target.checked)
-        script.setAttribute("src","https://cdn.jsdelivr.net/npm/@solana/web3.js@1.36.0/lib/index.iife.js");
-    else
-        script.setAttribute("src","https://cdn.jsdelivr.net/npm/@solana/web3.js@1.31.0/lib/index.iife.js");
+    script.setAttribute("src",`https://cdn.jsdelivr.net/npm/@solana/web3.js@${e.target.value || "1.31.0"}/lib/index.iife.js`);
     script.id="web3js";
     document.head.appendChild(script);
     const enableBTN = () => {
+        document.querySelector('button#regen').textContent=`Regenerate Transactions with web3.js@${e.target.value || "1.31.0"}`
         document.querySelector('button#regen').removeAttribute("disabled", false);
         script.removeEventListener('load', enableBTN);
     }

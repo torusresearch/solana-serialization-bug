@@ -5,24 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serialization Bug</title>
-    <!-- switch between 1.31 and 1.36 to see the bug -->
     <script id="web3js" src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.31.0/lib/index.iife.js"></script>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-    <div class="web3Selector">
-    <span>Web3.js v1.31.0</span>
-    <label class="switch">
-      <input id="switchWeb3" type="checkbox">
-      <span class="slider"></span>
-    </label>
-    <span>Web3.js v1.36.0</span>
-    </div>
-    <button class="btn" onclick="generateAndVerifyTxSignature()" id="regen">
-      Regenerate Transactions with selected web3 version
-    </button>
+  <div class="container">
+      <nav>
+         <div>
+        Transactions Are Equal = <span id="txequal"></span>
+      </div>
+      <div class="web3Selector">
+          Web3.js Version: 
+          <input id="web3version" type="text" value="1.31.0">
+          <button class="btn" onclick="generateAndVerifyTxSignature()" id="regen">
+          Regenerate Transactions with web3.js@1.31.0
+          </button>
+      </div>
+      <div id="serialize"></div>
+      </nav>
     <div class="transactions">
     <div>
       Transaction (tx0): 
@@ -33,10 +34,6 @@
       <pre id="tx1"></pre>
     </div>
     </div>
-    <div>
-      Transactions Are Equal = <span id="txequal"></span>
-    </div>
-    <div id="serialize"></div>
     </div>
     
 </body>
