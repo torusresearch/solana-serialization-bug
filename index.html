@@ -20,6 +20,9 @@
     </label>
     <span>Web3.js v1.36.0</span>
     </div>
+    <button class="btn" onclick="generateAndVerifyTxSignature()" id="regen">
+      Regenerate Transactions with selected web3 version
+    </button>
     <div class="transactions">
     <div>
       Transaction (tx0): 
@@ -34,9 +37,6 @@
       Transactions Are Equal = <span id="txequal"></span>
     </div>
     <div id="serialize"></div>
-    <button class="btn" onclick="generateAndVerifyTxSignature()" id="regen">
-      Regenerate Transactions with selected web3 version
-    </button>
     </div>
     
 </body>

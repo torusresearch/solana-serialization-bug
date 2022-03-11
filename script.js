@@ -122,7 +122,6 @@ generateAndVerifyTxSignature();
 
 
 document.querySelector("input#switchWeb3").addEventListener("change",(e)=>{
-    console.log(e.target.checked);
     let script=document.querySelector('script#web3js');
     document.head.removeChild(script);
     script=document.createElement('script');
